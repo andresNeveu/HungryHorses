@@ -4,8 +4,7 @@ module IAGroup {
 
     opens hungryHorses to javafx.fxml;
     opens views to javafx.fxml;
-    opens model to javafx.fxml;
+    //opens model to javafx.fxml;
     exports views;
     exports hungryHorses;
-    exports model;
 }
