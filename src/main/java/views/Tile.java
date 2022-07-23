@@ -11,6 +11,9 @@ import java.util.Objects;
 public class Tile extends StackPane {
     public Tile(Integer color) {
         ImageView imageView = new ImageView();
+        if(color == null) {
+            color = 0;
+        }
         switch (color) {
             case 1 -> {
                 Image blackChess = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/blackChess.png")));
@@ -33,8 +36,9 @@ public class Tile extends StackPane {
                 imageView.setImage(flower);
             }
         }
-        Rectangle rectangle = new Rectangle(50,50,Color.WHITE);
+        Rectangle rectangle = new Rectangle(50, 50, Color.WHITE);
         rectangle.setStroke(Color.BLACK);
-        getChildren().addAll(rectangle,imageView);
+        getChildren().addAll(rectangle, imageView);
     }
+
 }
