@@ -10,13 +10,8 @@ import javafx.scene.layout.Pane;
 import java.util.ArrayList;
 
 public class MapController {
-    private Integer[][] map;
+    private final Integer[][] map = new Integer[8][8];
     private ArrayList<Tile> tiles;
-    private int numApple = 0;
-    private int numGrass = 0;
-    private int numFlower = 0;
-    private int whiteChess = 0;
-    private int blackChess = 0;
 
     @FXML
     Pane paneGame;
@@ -27,69 +22,44 @@ public class MapController {
      * Randomly generate a matriz of size 8x8
      */
     public void generateMap() {
-        Integer[][] matriz = new Integer[8][8];
-        for (int i = 0; i < 8; i +=1) {
-            for (int j = 0; j < 8; j += 2) {
-                int item = (int) Math.ceil(Math.random() * 6);
-                if (blackChess < 1 && item == 1) {
-                    matriz[i][j] = item;
-                    blackChess++;
-                }
-                if (whiteChess < 1 && item == 2) {
-                    matriz[i][j] = item;
-                    whiteChess++;
-                }
-                if (numApple < 2 && item == 3) {
-                    matriz[i][j] = item;
-                    numApple++;
-                }
-                if (numGrass < 14 && item == 4) {
-                    matriz[i][j] = item;
-                    numGrass++;
-                }
-                if (numFlower < 5 && item == 5) {
-                    matriz[i][j] = item;
-                    numFlower++;
-                }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                map[i][j] = 0;
             }
         }
-        numApple = 0;
-        whiteChess = 0;
-        blackChess = 0;
-        map = refinarMatriz(matriz, 4, 14, numGrass);
-        map = refinarMatriz(map, 5, 5, numFlower);
+        for (int i = 5; i > 0; i--) {
+            switch (i) {
+                case 1, 2 -> refinarMatriz(i, 1);
+                case 3 -> refinarMatriz(i, 2);
+                case 4 -> refinarMatriz(i, 14);
+                case 5 -> refinarMatriz(i, 5);
+            }
+        }
     }
 
     /**
      * Add missing numbers in matrix
-     * @param matriz matrix
-     * @param type type of item
+     *
+     * @param type   type of item
      * @param amount item quantity required
-     * @param numItem current item quantity
-     * @return Integer[8][8]
      */
-    public Integer[][] refinarMatriz(Integer[][] matriz, int type, int amount, int numItem) {
-        if (numberAppearances(type, amount, matriz)) {
-            for (int i = 0; i < 8; i += 1) {
-                for (int j = 0; j < 8; j += 1) {
-                    if (matriz[i][j] == null && numItem < amount) {
-                        matriz[i][j] = type;
-                        numItem++;
-                    }
+    public void refinarMatriz(int type, int amount) {
+        for (int k = 0; k < amount; ) {
+            if (!(numberAppearances(type, amount, map))) {
+                int i = (int) Math.floor(Math.random() * 8);
+                int j = (int) Math.floor(Math.random() * 8);
+                if (map[i][j] == 0) {
+                    map[i][j] = type;
+                    k++;
                 }
             }
         }
-        if(type == 5) {
-            numFlower = 0;
-        } else {
-            numGrass = 0;
-        }
-        return matriz;
     }
 
     /**
      * checks if a number exceeds the amount of occurrences in a matrix.
-     * @param type type of item
+     *
+     * @param type   type of item
      * @param amount item quantity required
      * @param matriz matrix
      * @return boolean
@@ -105,7 +75,7 @@ public class MapController {
                 }
             }
         }
-        return val < amount;
+        return val > amount;
     }
 
     /**
