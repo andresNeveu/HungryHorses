@@ -2,41 +2,37 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.HomeController">
+<AnchorPane prefHeight="181.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.HomeController">
    <children>
       <Label alignment="CENTER" layoutY="-1.0" prefHeight="41.0" prefWidth="400.0" text="Hungry Hourses">
          <font>
             <Font size="39.0" />
          </font>
       </Label>
-      <Pane layoutX="100.0" layoutY="94.0" prefHeight="200.0" prefWidth="200.0">
+      <HBox fx:id="scenePane" layoutX="15.0" layoutY="107.0" prefHeight="30.0" prefWidth="370.0">
          <children>
-            <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/hungryHorses.png" />
-               </image></ImageView>
-         </children></Pane>
-      <HBox fx:id="scenePane" layoutX="95.0" layoutY="346.0" prefHeight="30.0" prefWidth="210.0">
-         <children>
-            <Button fx:id="bInstruction" mnemonicParsing="false" onAction="#instructionEvent" text="Intrucciones">
+            <Button fx:id="bInstruction" mnemonicParsing="false" onAction="#instructionEvent" style="-fx-background-color: skyBlue;" text="Intrucciones">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="bStart" mnemonicParsing="false" onAction="#startEvent" text="Iniciar" />
-            <Button fx:id="bExit" mnemonicParsing="false" onAction="#exitEvent" text="Salir">
+            <Button fx:id="bStart" mnemonicParsing="false" onAction="#startEvent" style="-fx-background-color: silver;" text="Iniciar" />
+            <Button fx:id="bExit" mnemonicParsing="false" onAction="#exitEvent" style="-fx-background-color: salmon;" text="Salir">
                <HBox.margin>
                   <Insets left="20.0" />
                </HBox.margin>
             </Button>
+            <ComboBox fx:id="comboBox" onAction="#selectEvent" prefWidth="130.0">
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </ComboBox>
          </children>
       </HBox>
    </children>
