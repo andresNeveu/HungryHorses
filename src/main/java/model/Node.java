@@ -1,69 +1,73 @@
 package model;
 
-import java.lang.reflect.Array;
-
 public class Node {
     private Integer[][] map;
     private Node parent;
     private Integer deep;
-    private Integer cost;
-    private Integer item;
-    private Integer[] place;
-
-    private Integer points;
-    private Integer heuristic = 0;
+    private Integer[][] positions = new Integer[2][2];
+    private Integer[] points = new Integer[2];
+    private Integer utility = 0;
+    private Integer kind; //0 max, 1 min
 
 
     /**
      * Constructor source node
      *
-     * @param map   environment
-     * @param place robot place
-     * @param goals in map
+     * @param map environment
      */
-    public Node(Integer[][] map, Integer[] place, Integer[][] goals) {
+    public Node(Integer[][] map, Integer[][] positions) {
         this.map = map;
         this.parent = null;
         this.deep = 0;
-        this.cost = 0;
-        this.item = 0;
-        this.place = place;
-        this.points = 0;
+        this.points[0] = 0;
+        this.points[1] = 0;
+        this.positions = positions;
+        this.kind = 0;
+        this.utility = Integer.MIN_VALUE;
     }
 
 
     /**
-     * Constructor child node
+     * Constructor children nodes
      *
      * @param parent    parent node
      * @param direction 1 right, 2 left, 3 up and other down
      */
     public Node(Node parent, Integer direction) {
-        Integer[] nextPlace = parent.nextPlace(direction);
         this.parent = parent;
+        this.kind = parent.getKind() == 0? 1 : 0;
+        this.utility = kind == 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         this.deep = parent.getDeep() + 1;
-        this.map = parent.nextMap(nextPlace);
-        this.place = nextPlace;
+        //this.map = parent.nextMap();
     }
 
 
     public Node getParent() {
         return parent;
     }
+
     public Integer getDeep() {
         return deep;
+    }
+
+    public Integer[][] getPositions() {
+        return positions;
+    }
+
+    public Integer[] getPoints() {
+        return points;
+    }
+
+    public Integer getKind() {
+        return kind;
     }
 
     public Integer[][] getMap() {
         return map;
     }
 
-    public Integer[] getPlace() {
-        return place;
-    }
-
-    public Integer getHeuristic() {
-        return heuristic;
+    public Integer getUtility() {
+        return utility;
     }
 
 
@@ -131,7 +135,4 @@ public class Node {
      *
      * @return value of heuristic
      */
-    private Integer setHeuristic() {
-       return 0;
-    }
 }
