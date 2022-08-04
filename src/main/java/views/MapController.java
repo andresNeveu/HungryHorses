@@ -3,25 +3,39 @@ package views;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
-public class MapController {
+public class MapController implements Initializable {
     private final Integer[][] map = new Integer[8][8];
     private ArrayList<Tile> tiles;
+    private Image imgBlackChess = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/blackChess.png")));
 
     @FXML
-    Pane paneGame;
+    private Pane paneGame;
     @FXML
-    Button bTest;
+    private Button bTest;
+    private Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/blackChess.png")));
+    private int[] place = new int[2];
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        loadMap();
+    }
+
 
     /**
      * Randomly generate a matriz of size 8x8
      */
-    public void generateMap() {
+    public void generateInitMap() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 map[i][j] = 0;
@@ -35,6 +49,7 @@ public class MapController {
                 case 5 -> refinarMatriz(i, 5);
             }
         }
+        findPlace();
     }
 
     /**
@@ -86,18 +101,24 @@ public class MapController {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Integer item = map[i][j];
-                tiles.add(new Tile(item));
+                Integer[] place = new Integer[2];
+                place[0] = i;
+                place[1] = j;
+                Tile tile = new Tile(item, place);
+                setupTileEvent(tile);
+                tiles.add(tile);
             }
         }
     }
 
-    /**
-     * Update map
-     */
-    public void updateMap() {
+    public void newMap() {
+        findPlace();
         ObservableList<Node> tilesMap = paneGame.getChildren();
         paneGame.getChildren().removeAll(tilesMap);
-        generateMap();
+        paintMap();
+    }
+
+    public void paintMap() {
         loadTile();
         for (int i = 0; i < tiles.size(); i++) {
             Tile tile = tiles.get(i);
@@ -107,10 +128,53 @@ public class MapController {
         }
     }
 
+    /**
+     * Update map
+     */
+    public void loadMap() {
+        ObservableList<Node> tilesMap = paneGame.getChildren();
+        paneGame.getChildren().removeAll(tilesMap);
+        generateInitMap();
+        paintMap();
+    }
+
+    public void findPlace() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (map[i][j] == 1) {
+                    place[0] = i;
+                    place[1] = j;
+                }
+            }
+        }
+    }
+
+    public boolean possibleMovePlayer(Integer[] newPlace) {
+        Integer x = (newPlace[0] > place[0]) ? newPlace[0] - place[0] : place[0] - newPlace[0];
+        Integer y = (newPlace[1] > place[1]) ? newPlace[1] - place[1] : place[1] - newPlace[1];
+        if (((x == 1) && (y == 2)) || ((x == 2) && (y == 1))) {
+            return true;
+        }
+        return false;
+    }
+
     @FXML
     public void onClickUpdate(ActionEvent event) {
         if (event.getSource() == bTest) {
-            updateMap();
+            loadMap();
         }
+    }
+
+    private void setupTileEvent(Tile tile) {
+        tile.setOnMouseClicked(mouseEvent -> {
+            Integer[] tempPLace = tile.getPlace();
+            if(possibleMovePlayer(tempPLace)) {
+                System.out.println("x: "  + tempPLace[0]);
+                System.out.println("y: " + tempPLace[1]);
+                map[tempPLace[0]][tempPLace[1]] = 1;
+                map[place[0]][place[1]] = 0;
+                newMap();
+            }
+        });
     }
 }
