@@ -44,7 +44,7 @@ public class HomeController implements Initializable {
 
     public void initCB() {
         ObservableList<String> option =
-                FXCollections.observableArrayList("","Facil", "Intermedio");
+                FXCollections.observableArrayList("","Principiante", "Amateur", "Experto");
         comboBox.setItems(option);
         comboBox.getSelectionModel().selectFirst();
     }
@@ -58,7 +58,17 @@ public class HomeController implements Initializable {
         alert.initStyle(StageStyle.UTILITY);
         alert.setTitle("Instrucciones");
         alert.setHeaderText(null);
-        alert.setContentText("Infromatin Message");
+        alert.setContentText("Hungry Horses" + "\n" +
+                "Se tendran 3 niveles de juego(Principiante, Amateur, Experto)." + "\n" +
+                "Dentro del tablero habran diferentes tipos de casillas:" + "\n" +
+                "\t14 casillas con césped"  + "\n" +
+                "\t5 casillas con flores" + "\n" +
+                "\t2 casillas con manzanas" + "\n" +
+                "Las cuales tendran diferente puntuacion al ser comidas por un caballo:" + "\n" +
+                "\t1 punto si es un césped"  + "\n" +
+                "\t3 puntos si es una flor"  + "\n" +
+                "\t5 puntos si es una manzana."+ "\n" +
+                "¡El ganador sera quien obtenga el mayor numero de puntos posibles!");
         alert.showAndWait();
     }
 
