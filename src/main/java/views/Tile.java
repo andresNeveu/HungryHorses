@@ -20,16 +20,12 @@ public class Tile extends StackPane {
         this.item = item;
         switch (item) {
             case 1 -> {
-                Knight blackChess = new Knight("black",place);
-                Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
-                rectangle.setStroke(Color.BLACK);
-                getChildren().addAll(rectangle, blackChess);
+                Image blackChess = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/blackChess.png")));
+                setImage(blackChess);
             }
             case 2 -> {
-                Knight whiteChess = new Knight("white",place);
-                Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
-                rectangle.setStroke(Color.BLACK);
-                getChildren().addAll(rectangle, whiteChess);
+                Image whiteChess = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/whiteChess.png")));
+                setImage(whiteChess);
             }
             case 3 -> {
                 Image apple = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/apple.png")));
