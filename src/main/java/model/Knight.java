@@ -36,7 +36,7 @@ public class Knight extends ImageView {
 
     public Integer[] newPlace(int direction) {
         Integer[] nextPlace = new Integer[2];
-        if (possibleMove(direction)) {
+        if (possibleMoves(direction)) {
             switch (direction) {
                 //2,3
                 case 1: //upper right - up
@@ -81,66 +81,61 @@ public class Knight extends ImageView {
         Integer[] temp = new Integer[2];
         for (int i = 1; i < 9; i++) {
             temp = newPlace(i);
-            move.add(temp);
+            if(temp[0] != null && temp[1] != null){
+                move.add(temp);
+            }
         }
         return move;
     }
 
 
-    public boolean possibleMove(Integer direction) {
+    public boolean possibleMoves(Integer direction) {
         switch (direction) {
             case 1: //upper right - up
-                if (place[0] == 0 || place[1] == 7 || place[1] == 0
-                        || (place[1] + 1 == 7) || (place[0] - 1 == 0)
-                        || place[0] >= 1) {
+                if (place[0] == 0 || (place[0] == 7)
+                        || (place[0] - 1 == 0)) {
                     return false;
                 }
                 break;
             case 2: //upper right - down
-                if (place[0] == 0 || place[1] == 7 || place[1] == 0
-                        || ((place[1] + 1 == 7) || (place[0] - 1 == 0))
-                        || place[1] >= 6) {
+                if (place[0] == 0 || (place[0] == 7)
+                        || (place[1] + 1 == 7)) {
                     return false;
                 }
                 break;
             case 3: //upper left - up
-                if (place[0] == 0 || place[1] == 7 || place[1] == 0
-                        || (place[1] - 1 == 0) || (place[0] - 1 == 0)
-                        || place[0] >= 1) {
+                if (place[0] == 0 || place[1] == 0
+                        || (place[0] - 1 == 0)) {
                     return false;
                 }
                 break;
             case 4: //upper left - down
-                if (place[0] == 0 || place[1] == 7 || place[1] == 0
-                        || ((place[1] - 1 == 0) || (place[0] - 1 == 0))
-                        || place[1] >= 1) {
+                if (place[0] == 0 || place[1] == 0
+                        || (place[1] - 1 == 0)) {
                     return false;
                 }
                 break;
             case 5: //lower right - up
-                if (place[0] == 7 || place[1] == 0 || place[1] == 7
-                        || (place[1] + 1 == 7) || (place[0] + 1 == 7)
-                        || place[1] >= 6) {
+                if (place[0] == 7 || (place[1] == 7)
+                        || (place[1] + 1 == 7)) {
                     return false;
                 }
                 break;
             case 6: //lower right - down
-                if (place[0] == 7 || place[1] == 0 || place[1] == 7
-                        || (place[1] + 1 == 7) || (place[0] + 1 == 7)
-                        || place[0] >= 6) {
-                    return false;
-                }
-            case 7: //upper left - up
-                if (place[0] == 7 || place[1] == 0 || place[1] == 7
-                        || (place[1] + 1 == 7) || (place[0] + 1 == 7)
-                        || place[1] >= 1) {
+                if (place[0] == 7 || (place[1] == 7)
+                        || (place[0] + 1 == 7)) {
                     return false;
                 }
                 break;
-            case 8: //upper left - down
-                if (place[0] == 7 || place[1] == 0 || place[1] == 7
-                        || ((place[1] + 1 == 7) || (place[0] + 7 == 0))
-                        || place[0] >= 6) {
+            case 7: //lower left - up
+                if (place[0] == 7 || (place[1] == 0)
+                        || (place[1] - 1 == 0)) {
+                    return false;
+                }
+                break;
+            case 8: //lower left - down
+                if (place[0] == 7 || (place[1] == 0)
+                        || (place[0] + 1 == 7)) {
                     return false;
                 }
                 break;
