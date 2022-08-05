@@ -177,4 +177,8 @@ public class MapController implements Initializable {
             }
         });
     }
+
+    public Integer[][] getMap() {
+        return map;
+    }
 }

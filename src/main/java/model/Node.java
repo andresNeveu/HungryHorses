@@ -1,10 +1,14 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicReferenceArray;
+
 public class Node {
     private final Integer[][] map;
     private final Node parent;
     private final Integer deep;
-    private final Integer[][] positions = new Integer[3][2];
+    private final Integer[] positionAnswer = new Integer[2];
     private final Integer[] points = new Integer[2]; //[0] para maquina,[1] para jugador
     private Integer utility;
     private final Integer kind; //0 max, 1 min
@@ -34,9 +38,8 @@ public class Node {
      * Constructor children nodes
      *
      * @param parent    parent node
-     * @param direction 1 right, 2 left, 3 up and other down
      */
-    public Node(Node parent, Integer direction, Integer[] position) {
+    public Node(Node parent, Integer[] position) {
         this.parent = parent;
         this.kind = parent.getKind() == 0 ? 1 : 0;
         this.utility = kind == 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
@@ -60,8 +63,8 @@ public class Node {
         return deep;
     }
 
-    public Integer[][] getPositions() {
-        return positions;
+    public Integer[] getPositionAnswer() {
+        return positionAnswer;
     }
 
     public Integer[] getPoints() {
@@ -124,17 +127,17 @@ public class Node {
         }
         if (kind == 0) {
             nextMap[position[0]][position[1]] = 2;
-            nextMap[positions[0][0]][positions[0][1]] = 0;
+            nextMap[knights[0].getPlace()[0]][knights[0].getPlace()[1]] = 0;
         } else {
             nextMap[position[0]][position[1]] = 1;
-            nextMap[positions[1][0]][positions[1][1]] = 0;
+            nextMap[knights[1].getPlace()[0]][knights[1].getPlace()[1]] = 0;
         }
         return nextMap;
     }
 
     public void viewMap() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 System.out.print(map[i][j] + " ");
             }
             System.out.println();
@@ -157,19 +160,29 @@ public class Node {
 
     public void calcUtility() {
         utility = points[0] - points[1];
-        setSolution(positions[0][0], positions[0][1]);
+        setSolution(knights[0].getPlace()[0], knights[0].getPlace()[1]);
+        resolveUtility();
     }
 
     public void resolveUtility() {
         Node node = this;
         while (node.getParent() != null) {
-            node.useUtility(node.getUtility(), node.getPositions()[3][0], node.getPositions()[3][1]);
-            node = getParent();
+            node.getParent().useUtility(node.getUtility(), node.getKnights()[0].getPlace()[0], node.getKnights()[0].getPlace()[1]);
+            node = node.getParent();
         }
     }
 
     public void setSolution(Integer x, Integer y) {
-        positions[3][0] = x;
-        positions[3][1] = y;
+        positionAnswer[0] = x;
+        positionAnswer[1] = y;
+    }
+
+    public ArrayList<Node> expandNode(){
+        ArrayList<Integer[]> list = knights[kind].moveList(map);
+        ArrayList<Node> nodes = new ArrayList<>();
+        for(Integer[] place: list){
+            nodes.add(new Node(this, place));
+        }
+        return nodes;
     }
 }

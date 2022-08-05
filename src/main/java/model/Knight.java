@@ -74,49 +74,49 @@ public class Knight {
         switch (direction) {
             case 1: //upper right - up
                 if (place[0] == 0 || (place[0] == 7) || (place[0] - 1 == 0)
-                        || (map[place[0] - 2][place[1] + 1] != 1)) {
+                        || (map[place[0] - 2][place[1] + 1] == 1)) {
                     return false;
                 }
                 break;
             case 2: //upper right - down
                 if (place[0] == 0 || (place[0] == 7) || (place[1] + 1 == 7)
-                        || (map[place[0] - 1][place[1] + 2] != 1)) {
+                        || (map[place[0] - 1][place[1] + 2] == 1)) {
                     return false;
                 }
                 break;
             case 3: //upper left - up
                 if (place[0] == 0 || place[1] == 0 || (place[0] - 1 == 0)
-                        || (map[place[0] - 2][place[1] - 1] != 1)) {
+                        || (map[place[0] - 2][place[1] - 1] == 1)) {
                     return false;
                 }
                 break;
             case 4: //upper left - down
                 if (place[0] == 0 || place[1] == 0 || (place[1] - 1 == 0) ||
-                        (map[place[0] - 1][place[1] - 2] != 1)) {
+                        (map[place[0] - 1][place[1] - 2] == 1)) {
                     return false;
                 }
                 break;
             case 5: //lower right - up
                 if (place[0] == 7 || (place[1] == 7) || (place[1] + 1 == 7)
-                        || (map[place[0] + 1][place[1] + 2] != 1)) {
+                        || (map[place[0] + 1][place[1] + 2] == 1)) {
                     return false;
                 }
                 break;
             case 6: //lower right - down
                 if (place[0] == 7 || (place[1] == 7) || (place[0] + 1 == 7)
-                        || (map[place[0] + 2][place[1] + 1] != 1)) {
+                        || (map[place[0] + 2][place[1] + 1] == 1)) {
                     return false;
                 }
                 break;
             case 7: //lower left - up
                 if (place[0] == 7 || (place[1] == 0) || (place[1] - 1 == 0)
-                        || (map[place[0] + 1][place[1] - 2] != 1)) {
+                        || (map[place[0] + 1][place[1] - 2] == 1)) {
                     return false;
                 }
                 break;
             case 8: //lower left - down
                 if (place[0] == 7 || (place[1] == 0) || (place[0] + 1 == 7)
-                        || (map[place[0] + 2][place[1] - 1] != 1)) {
+                        || (map[place[0] + 2][place[1] - 1] == 1)) {
                     return false;
                 }
                 break;
@@ -127,4 +127,6 @@ public class Knight {
     public Integer[] getPlace () {
         return place;
     }
+
+
 }
