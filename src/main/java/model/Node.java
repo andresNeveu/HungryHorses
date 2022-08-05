@@ -1,15 +1,15 @@
 package model;
 
 public class Node {
-    private Integer[][] map;
-    private Node parent;
-    private Integer deep;
-    private Integer[][] positions = new Integer[2][2];
-    private Integer[] points = new Integer[2]; //[0] para maquina,[1] para jugador
-    private Integer utility = 0;
-    private Integer kind; //0 max, 1 min
+    private final Integer[][] map;
+    private final Node parent;
+    private final Integer deep;
+    private final Integer[][] positions = new Integer[3][2];
+    private final Integer[] points = new Integer[2]; //[0] para maquina,[1] para jugador
+    private Integer utility;
+    private final Integer kind; //0 max, 1 min
 
-    private Knight[] knights = new Knight[2]; //[0] para maquina,[1] para jugador
+    private final Knight[] knights = new Knight[2]; //[0] para maquina,[1] para jugador
 
 
     /**
@@ -27,7 +27,6 @@ public class Node {
         this.knights[1] = new Knight(positions[1][0], positions[0][1]);
         this.kind = 0;
         this.utility = Integer.MIN_VALUE;
-
     }
 
 
@@ -39,7 +38,7 @@ public class Node {
      */
     public Node(Node parent, Integer direction, Integer[] position) {
         this.parent = parent;
-        this.kind = parent.getKind() == 0? 1 : 0;
+        this.kind = parent.getKind() == 0 ? 1 : 0;
         this.utility = kind == 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         this.deep = parent.getDeep() + 1;
         this.knights[0] = kind == 0 ? new Knight(parent.getKnights()[0].getPlace()[0], parent.getKnights()[0].getPlace()[1]) : new Knight(position[0], position[1]);
@@ -106,19 +105,12 @@ public class Node {
         }
         return place;
     }
-    public Integer nextPoint(Integer[] position){
-        if(map[position[0]][position[1]] > 2){
+
+    public Integer nextPoint(Integer[] position) {
+        if (map[position[0]][position[1]] > 2) {
             return map[position[0]][position[1]];
         }
         return 0;
-    }
-
-    /**
-     * @param direction 1 right, 2 left, 3 up and other down
-     * @return if a move can be made
-     */
-    public Boolean possibleMove(Integer direction) {
-        return true;
     }
 
     /**
@@ -127,13 +119,13 @@ public class Node {
      */
     public Integer[][] nextMap(Integer[] position) {
         Integer[][] nextMap = new Integer[8][8];
-        for(int i = 0; i < 8; i++){
+        for (int i = 0; i < 8; i++) {
             System.arraycopy(map[i], 0, nextMap[i], 0, 8);
         }
-        if(kind == 0){
+        if (kind == 0) {
             nextMap[position[0]][position[1]] = 2;
             nextMap[positions[0][0]][positions[0][1]] = 0;
-        }else{
+        } else {
             nextMap[position[0]][position[1]] = 1;
             nextMap[positions[1][0]][positions[1][1]] = 0;
         }
@@ -145,13 +137,39 @@ public class Node {
             for (int j = 0; j < 10; j++) {
                 System.out.print(map[i][j] + " ");
             }
-            System.out.println("");
+            System.out.println();
         }
     }
 
-    /**
-     * the sum of the manhattan distance to the goals, provided they exist
-     *
-     * @return value of heuristic
-     */
+    public void useUtility(Integer value, Integer x, Integer y) {
+        if (kind == 0) {
+            if (value > utility) {
+                utility = value;
+                setSolution(x, y);
+            }
+        } else {
+            if (value < utility) {
+                utility = value;
+                setSolution(x, y);
+            }
+        }
+    }
+
+    public void calcUtility() {
+        utility = points[0] - points[1];
+        setSolution(positions[0][0], positions[0][1]);
+    }
+
+    public void resolveUtility() {
+        Node node = this;
+        while (node.getParent() != null) {
+            node.useUtility(node.getUtility(), node.getPositions()[3][0], node.getPositions()[3][1]);
+            node = getParent();
+        }
+    }
+
+    public void setSolution(Integer x, Integer y) {
+        positions[3][0] = x;
+        positions[3][1] = y;
+    }
 }
