@@ -1,25 +1,15 @@
 package model;
 
-import javafx.event.EventHandler;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import views.MapController;
-
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Knight {
-    private Integer[] place;
-    private int x;
-    private int y;
+    private Integer[] place = new Integer[2];
     ArrayList<Integer[]> possibleMoves;
+    int points;
 
-    public Knight(Integer[] place) {
-        this.place = place;
-        this.x = place[0];
-        this.y = place[1];
-
+    public Knight(int x, int y) {
+        place[0] = x;
+        place[1] = y;
     }
 
     private void addEvent() {
@@ -132,5 +122,9 @@ public class Knight {
                 break;
         }
         return true;
+    }
+
+    public Integer[] getPlace () {
+        return place;
     }
 }
