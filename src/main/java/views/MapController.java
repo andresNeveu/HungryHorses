@@ -43,8 +43,7 @@ public class MapController implements Initializable {
     private int totalPoints = 39;
     private int pointWhite = 0;
     private int pointBlack = 0;
-    private boolean turnIA = true;
-    private boolean turnMe = false;
+    private int level;
     private Integer[] tempPlace = new Integer[2];
     Stage stage;
 
@@ -229,21 +228,16 @@ public class MapController implements Initializable {
     private void setupTileEvent2(Tile tile) {
         tile.setOnMouseClicked(mouseEvent -> {
             Integer[] tilePLace = tile.getPlace();
-            System.out.println(tilePLace[0]);
-            System.out.println(tilePLace[1]);
             if (possibleMovePlayer(tilePLace)) {
                 int point = map[tilePLace[0]][tilePLace[1]];
                 blackChess.sumPoints(point);
                 totalPoints -= points(point);
                 System.out.println("Puntos blackChess: " + blackChess.getPoints());
                 map[tilePLace[0]][tilePLace[1]] = 1;
-                System.out.println("x: " + blackChess.getPlace()[0]);
-                System.out.println("y: " + blackChess.getPlace()[1]);
                 map[place[0]][place[1]] = 0;
-
+                newMap();
                 synchronized (this) {
                     try {
-                        newMap();
                         this.wait(500);
                         playIA();
                     } catch (InterruptedException e) {
@@ -258,7 +252,7 @@ public class MapController implements Initializable {
     public void playIA() {
         model.Node node;
         Integer[] playWhite = new Integer[2];
-        MinMax minMax = new MinMax(map, 2);
+        MinMax minMax = new MinMax(map, level);
         node = minMax.getSolution();
         playWhite = node.getPositionAnswer();
         totalPoints -= points(map[playWhite[0]][playWhite[1]]);
@@ -267,6 +261,21 @@ public class MapController implements Initializable {
         Integer[] place2 = node.getKnights()[0].getPlace();
         map[place2[0]][place2[1]] = 0;
         newMap();
+        if (totalPoints == 0) {
+            System.out.println("Ganador");
+        }
+    }
+
+    public void setLevel(String lvl) {
+        if (lvl.equalsIgnoreCase("Principiante")) {
+            level = 2;
+        }
+        if (lvl.equalsIgnoreCase("Amateur")) {
+            level = 4;
+        }
+        if (lvl.equalsIgnoreCase("Experto")) {
+            level = 6;
+        }
     }
 
     public Integer[][] getMap() {
@@ -275,6 +284,7 @@ public class MapController implements Initializable {
 
     public void game() {
         totalPoints = 39;
+        setLevel(cbSelect.getSelectionModel().getSelectedItem());
         playIA();
     }
 
@@ -321,21 +331,29 @@ public class MapController implements Initializable {
         exitAlert.setHeaderText("Vas a salir");
         exitAlert.setContentText("¿Realmente quieres salir?");
         if (exitAlert.showAndWait().get() == ButtonType.OK) {
+            stage = (Stage) paneGame.getScene().getWindow();
             stage.close();
         }
     }
 
     private void changeColorUpdateButton() {
-        bStart.setDisable(false);
         if (checkCombo()) {
+            bStart.setDisable(false);
+            paneGame.setDisable(false);
             bStart.setStyle("-fx-background-color: lightgreen; ");
-        } else {
-            bStart.setStyle("-fx-background-color: silver; ");
         }
     }
 
     private boolean checkCombo() {
         return !cbSelect.getSelectionModel().getSelectedItem().isEmpty();
+    }
+
+    public void cleanGUI() {
+        cbSelect.getSelectionModel().selectFirst();
+        paneGame.setDisable(true);
+        bStart.setDisable(true);
+        bStart.setStyle("-fx-background-color: silver;");
+        loadMap();
     }
 
     @FXML
@@ -351,6 +369,9 @@ public class MapController implements Initializable {
         }
         if (event.getSource() == cbSelect) {
             changeColorUpdateButton();
+        }
+        if(event.getSource() == bClean) {
+            cleanGUI();
         }
         if (event.getSource() == bInstruction) {
             instructionEvent();

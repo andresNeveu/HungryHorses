@@ -11,7 +11,7 @@
 
 <AnchorPane prefHeight="427.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.MapController">
    <children>
-      <Pane fx:id="paneGame" layoutX="20.0" layoutY="14.0" prefHeight="400.0" prefWidth="400.0" />
+      <Pane fx:id="paneGame" disable="true" layoutX="20.0" layoutY="14.0" prefHeight="400.0" prefWidth="400.0" />
       <AnchorPane layoutX="429.0" layoutY="14.0" prefHeight="400.0" prefWidth="222.0">
          <children>
             <VBox alignment="TOP_CENTER" depthTest="DISABLE" layoutX="8.0" layoutY="95.0" prefHeight="230.0" prefWidth="206.0" spacing="15.0">
@@ -19,8 +19,7 @@
                   <ComboBox fx:id="cbSelect" onAction="#onClick" prefHeight="24.0" prefWidth="171.0" style="-fx-background-color: grey;" />
                   <Button fx:id="bStart" disable="true" mnemonicParsing="false" onAction="#onClick" prefHeight="24.0" prefWidth="175.0" style="-fx-background-color: silver;" text="Iniciar" />
                   <Button fx:id="bInstruction" mnemonicParsing="false" onAction="#onClick" prefHeight="24.0" prefWidth="174.0" style="-fx-background-color: skyblue;" text="Instruciones" />
-                  <Button fx:id="bTest" mnemonicParsing="false" onAction="#onClick" prefHeight="24.0" prefWidth="172.0" style="-fx-background-color: yellow;" text="Test" />
-                  <Button fx:id="bClean" mnemonicParsing="false" onAction="#onClick" prefHeight="24.0" prefWidth="176.0" style="-fx-background-color: skyblue;" text="Clean" />
+                  <Button fx:id="bClean" mnemonicParsing="false" onAction="#onClick" prefHeight="24.0" prefWidth="176.0" style="-fx-background-color: skyblue;" text="Reset" />
                   <Button fx:id="bExit" mnemonicParsing="false" onAction="#onClick" prefHeight="24.0" prefWidth="173.0" style="-fx-background-color: salmon;" text="Salir" />
                </children>
                <opaqueInsets>
