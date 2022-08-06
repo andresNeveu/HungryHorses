@@ -6,10 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -23,7 +20,10 @@ import java.util.ResourceBundle;
 public class MapController implements Initializable {
     private final Integer[][] map = new Integer[8][8];
     private ArrayList<Tile> tiles;
-
+    @FXML
+    private Label labelIA;
+    @FXML
+    private Label labelMyPoints;
     @FXML
     private Pane paneGame;
     @FXML
@@ -41,8 +41,8 @@ public class MapController implements Initializable {
     private int[] place = new int[2];
     private Knight blackChess;
     private int totalPoints = 39;
-    private int pointWhite = 0;
-    private int pointBlack = 0;
+    private int pointsIA = 0;
+    private int pointMe = 0;
     private int level;
     private Integer[] tempPlace = new Integer[2];
     Stage stage;
@@ -229,10 +229,11 @@ public class MapController implements Initializable {
         tile.setOnMouseClicked(mouseEvent -> {
             Integer[] tilePLace = tile.getPlace();
             if (possibleMovePlayer(tilePLace)) {
+                winner();
                 int point = map[tilePLace[0]][tilePLace[1]];
-                blackChess.sumPoints(point);
+                pointMe += points(point);
                 totalPoints -= points(point);
-                System.out.println("Puntos blackChess: " + blackChess.getPoints());
+                updatePoints();
                 map[tilePLace[0]][tilePLace[1]] = 1;
                 map[place[0]][place[1]] = 0;
                 newMap();
@@ -256,7 +257,8 @@ public class MapController implements Initializable {
         node = minMax.getSolution();
         playWhite = node.getPositionAnswer();
         totalPoints -= points(map[playWhite[0]][playWhite[1]]);
-        pointWhite += points(map[playWhite[0]][playWhite[1]]);
+        pointsIA += points(map[playWhite[0]][playWhite[1]]);
+        updatePoints();
         map[playWhite[0]][playWhite[1]] = 2;
         Integer[] place2 = node.getKnights()[0].getPlace();
         map[place2[0]][place2[1]] = 0;
@@ -348,14 +350,38 @@ public class MapController implements Initializable {
         return !cbSelect.getSelectionModel().getSelectedItem().isEmpty();
     }
 
-    public void cleanGUI() {
+    public void resetGUI() {
         cbSelect.getSelectionModel().selectFirst();
         paneGame.setDisable(true);
         bStart.setDisable(true);
         bStart.setStyle("-fx-background-color: silver;");
+        labelIA.setText("0");
+        labelMyPoints.setText("0");
+        pointMe = 0;
+        pointsIA = 0;
+        totalPoints = 39;
         loadMap();
     }
-
+    public void updatePoints(){
+        labelIA.setText(" " + pointsIA);
+        labelMyPoints.setText(" " + pointMe);
+    }
+    public void winner(){
+        boolean total = totalPoints == 0;
+        boolean IA = pointsIA > pointMe + totalPoints;
+        boolean Me = pointMe > pointsIA + totalPoints;
+        String winner = "";
+        winner = pointsIA > pointMe? "IA": "ME";
+        if(total || IA || Me){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.setTitle("Ganador");
+            alert.setHeaderText(null);
+            alert.setContentText(winner);
+            alert.showAndWait();
+            paneGame.setDisable(true);
+        }
+    }
     @FXML
     public void onClick(ActionEvent event) throws InterruptedException {
         if (event.getSource() == bStart) {
@@ -371,7 +397,7 @@ public class MapController implements Initializable {
             changeColorUpdateButton();
         }
         if(event.getSource() == bClean) {
-            cleanGUI();
+            resetGUI();
         }
         if (event.getSource() == bInstruction) {
             instructionEvent();

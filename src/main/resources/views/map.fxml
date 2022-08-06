@@ -5,11 +5,12 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="427.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.MapController">
+<AnchorPane prefHeight="443.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.MapController">
    <children>
       <Pane fx:id="paneGame" disable="true" layoutX="20.0" layoutY="14.0" prefHeight="400.0" prefWidth="400.0" />
       <AnchorPane layoutX="429.0" layoutY="14.0" prefHeight="400.0" prefWidth="222.0">
@@ -33,5 +34,25 @@
             </Label>
          </children>
       </AnchorPane>
+      <HBox layoutX="29.0" layoutY="415.0" prefHeight="26.0" prefWidth="382.0">
+         <children>
+            <Label text="Puntos IA" />
+            <Label fx:id="labelIA" text="0">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <Label text="Mis puntos">
+               <HBox.margin>
+                  <Insets left="50.0" />
+               </HBox.margin>
+            </Label>
+            <Label fx:id="labelMyPoints" layoutX="171.0" layoutY="10.0" text="0">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
