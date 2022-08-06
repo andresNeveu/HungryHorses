@@ -10,9 +10,21 @@ public class Knight {
     public Knight(int x, int y) {
         place[0] = x;
         place[1] = y;
+        //this.points = points;
     }
 
-    private void addEvent() {
+    public void sumPoints(int type) {
+        switch (type) {
+            case 3 -> {
+                points += 5;
+            }
+            case 4 -> {
+                points += 1;
+            }
+            case 5 -> {
+                points += 3;
+            }
+        }
     }
 
     public Integer[] newPlace(int direction, Integer[][] map) {
@@ -61,7 +73,7 @@ public class Knight {
         ArrayList<Integer[]> move = new ArrayList<>();
         Integer[] temp = new Integer[2];
         for (int i = 1; i < 9; i++) {
-            temp = newPlace(i,map);
+            temp = newPlace(i, map);
             if (temp[0] != null && temp[1] != null) {
                 move.add(temp);
             }
@@ -69,64 +81,102 @@ public class Knight {
         return move;
     }
 
-
     public boolean possibleMoves(Integer direction, Integer[][] map) {
         switch (direction) {
             case 1: //upper right - up
-                if (place[0] == 0 || (place[0] == 7) || (place[0] - 1 == 0)
-                        || (map[place[0] - 2][place[1] + 1] == 1)) {
+                if (place[0] == 0 || (place[1] == 7) || (place[0] - 1 == 0)) {
                     return false;
+                }
+                if (place[0] > 1 && place[1] < 7) {
+                    if (map[place[0] - 2][place[1] + 1] == 1) {
+                        return false;
+                    }
                 }
                 break;
             case 2: //upper right - down
-                if (place[0] == 0 || (place[0] == 7) || (place[1] + 1 == 7)
-                        || (map[place[0] - 1][place[1] + 2] == 1)) {
+                if (place[0] == 0 || (place[1] == 7) || (place[1] + 1 == 7)) {
                     return false;
+                }
+                if (place[0] > 0 && place[1] < 6) {
+                    if (map[place[0] - 1][place[1] + 2] == 1) {
+                        return false;
+                    }
                 }
                 break;
             case 3: //upper left - up
-                if (place[0] == 0 || place[1] == 0 || (place[0] - 1 == 0)
-                        || (map[place[0] - 2][place[1] - 1] == 1)) {
+                if (place[0] == 0 || place[1] == 0 || (place[0] - 1 == 0)) {
                     return false;
+                }
+                if (place[0] > 1 && place[1] > 0) {
+                    if (map[place[0] - 2][place[1] - 1] == 1) {
+                        return false;
+                    }
                 }
                 break;
             case 4: //upper left - down
-                if (place[0] == 0 || place[1] == 0 || (place[1] - 1 == 0) ||
-                        (map[place[0] - 1][place[1] - 2] == 1)) {
+                if (place[0] == 0 || place[1] == 0 || (place[1] - 1 == 0)) {
                     return false;
+                }
+                if (place[0] > 0 && place[1] > 1) {
+                    if (map[place[0] - 1][place[1] - 2] == 1) {
+                        return false;
+                    }
                 }
                 break;
             case 5: //lower right - up
-                if (place[0] == 7 || (place[1] == 7) || (place[1] + 1 == 7)
-                        || (map[place[0] + 1][place[1] + 2] == 1)) {
+                if (place[0] == 7 || (place[1] == 7) || (place[1] + 1 == 7)) {
                     return false;
+                }
+                if (place[0] < 7 && place[1] < 6) {
+                    if (map[place[0] + 1][place[1] + 2] == 1) {
+                        return false;
+                    }
                 }
                 break;
             case 6: //lower right - down
-                if (place[0] == 7 || (place[1] == 7) || (place[0] + 1 == 7)
-                        || (map[place[0] + 2][place[1] + 1] == 1)) {
+                if (place[0] == 7 || (place[1] == 7) || (place[0] + 1 == 7)) {
                     return false;
+                }
+                if (place[0] < 6 && place[1] < 7) {
+                    if (map[place[0] + 2][place[1] + 1] == 1) {
+                        return false;
+                    }
                 }
                 break;
             case 7: //lower left - up
-                if (place[0] == 7 || (place[1] == 0) || (place[1] - 1 == 0)
-                        || (map[place[0] + 1][place[1] - 2] == 1)) {
+                if (place[0] == 7 || (place[1] == 0) || (place[1] - 1 == 0)) {
                     return false;
+                }
+                if (place[0] < 7 && place[1] > 1) {
+                    if (map[place[0] + 1][place[1] - 2] == 1) {
+                        return false;
+                    }
                 }
                 break;
             case 8: //lower left - down
-                if (place[0] == 7 || (place[1] == 0) || (place[0] + 1 == 7)
-                        || (map[place[0] + 2][place[1] - 1] == 1)) {
+                if (place[0] == 7 || (place[1] == 0) || (place[0] + 1 == 7)) {
                     return false;
+                }
+                if (place[0] < 6 && place[1] > 0) {
+                    if (map[place[0] + 2][place[1] - 1] == 1) {
+                        return false;
+                    }
                 }
                 break;
         }
         return true;
     }
 
-    public Integer[] getPlace () {
+    public void updatePosition(int x, int y) {
+        place[0] = x;
+        place[1] = y;
+    }
+
+    public Integer[] getPlace() {
         return place;
     }
 
-
+    public int getPoints() {
+        return points;
+    }
 }

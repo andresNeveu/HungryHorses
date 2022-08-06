@@ -11,7 +11,7 @@ import java.io.IOException;
 public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        Scene scene = new Scene(loadFXML("/views/home"));
+        Scene scene = new Scene(loadFXML("/views/map"));
         stage.setScene(scene);
         stage.setTitle("Hungry Horses");
         stage.show();

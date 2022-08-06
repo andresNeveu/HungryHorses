@@ -28,7 +28,7 @@ public class Node {
         this.points[0] = 0;
         this.points[1] = 0;
         this.knights[0] = new Knight(positions[0][0], positions[0][1]);
-        this.knights[1] = new Knight(positions[1][0], positions[0][1]);
+        this.knights[1] = new Knight(positions[1][0], positions[1][1]);
         this.kind = 0;
         this.utility = Integer.MIN_VALUE;
     }
@@ -37,15 +37,17 @@ public class Node {
     /**
      * Constructor children nodes
      *
-     * @param parent    parent node
+     * @param parent parent node
      */
     public Node(Node parent, Integer[] position) {
         this.parent = parent;
         this.kind = parent.getKind() == 0 ? 1 : 0;
         this.utility = kind == 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         this.deep = parent.getDeep() + 1;
-        this.knights[0] = kind == 0 ? new Knight(parent.getKnights()[0].getPlace()[0], parent.getKnights()[0].getPlace()[1]) : new Knight(position[0], position[1]);
-        this.knights[1] = kind == 0 ? new Knight(position[0], position[1]) : new Knight(parent.getKnights()[1].getPlace()[0], parent.getKnights()[1].getPlace()[1]);
+        this.knights[0] = kind == 0 ? new Knight(parent.getKnights()[0].getPlace()[0], parent.getKnights()[0].getPlace()[1])
+                : new Knight(position[0], position[1]);
+        this.knights[1] = kind == 0 ? new Knight(position[0], position[1])
+                : new Knight(parent.getKnights()[1].getPlace()[0], parent.getKnights()[1].getPlace()[1]);
         this.map = parent.nextMap(position);
         this.points[0] = kind == 0 ? parent.getPoints()[0] : parent.getPoints()[0] + parent.nextPoint(position);
         this.points[1] = kind == 0 ? parent.getPoints()[1] + parent.nextPoint(position) : parent.getPoints()[1];
@@ -111,7 +113,19 @@ public class Node {
 
     public Integer nextPoint(Integer[] position) {
         if (map[position[0]][position[1]] > 2) {
-            return map[position[0]][position[1]];
+            int points = 0;
+            switch (map[position[0]][position[1]]) {
+                case 3 -> {
+                    points = 5;
+                }
+                case 4 -> {
+                    points = 1;
+                }
+                case 5 -> {
+                    points = 3;
+                }
+            }
+            return points;
         }
         return 0;
     }
@@ -177,10 +191,10 @@ public class Node {
         positionAnswer[1] = y;
     }
 
-    public ArrayList<Node> expandNode(){
-        ArrayList<Integer[]> list = knights[kind].moveList(map);
+    public ArrayList<Node> expandNode() {
+        ArrayList<Integer[]> list = (ArrayList<Integer[]>) knights[kind].moveList(map).clone();
         ArrayList<Node> nodes = new ArrayList<>();
-        for(Integer[] place: list){
+        for (Integer[] place : list) {
             nodes.add(new Node(this, place));
         }
         return nodes;

@@ -1,5 +1,6 @@
 package views;
 
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -13,6 +14,7 @@ import java.util.Objects;
 public class Tile extends StackPane {
     private Integer[] place;
     private ImageView imageView = new ImageView();
+    private Rectangle rectangle;
     private Integer item;
 
     public Tile(Integer item, Integer[] place) {
@@ -40,7 +42,7 @@ public class Tile extends StackPane {
                 setImage(flower);
             }
         }
-        Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
+        rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.BLACK);
         getChildren().addAll(rectangle, imageView);
     }
@@ -49,6 +51,9 @@ public class Tile extends StackPane {
         this.place = place;
     }
 
+    public void setColor() {
+        this.rectangle.setStroke(Color.RED);
+    }
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
     }

@@ -15,29 +15,27 @@ public class MinMax {
         this.objective = objective;
     }
 
-    public Node getSolution(){
+    public Node getSolution() {
         Stack<Node> stack = new Stack<>();
         Integer[][] places = Node.initialPlace(map);
         Node source = new Node(map, places);
         stack.push(source);
         while (true) {
-            if(stack.isEmpty()){
+            if (stack.isEmpty()) {
                 return source;
             }
             Node node = stack.pop();
             if (node.getDeep() == objective) {
                 node.calcUtility();
-            }
-            else{
+            } else {
                 ArrayList<Node> nodes = node.expandNode();
-                for (Node aNode: nodes
-                     ) {
+                for (Node aNode : nodes) {
                     stack.push(aNode);
                 }
             }
         }
     }
-
+    /*
     public static void main(String[] args) {
         MapController mapController = new MapController();
         mapController.generateInitMap();
@@ -47,4 +45,5 @@ public class MinMax {
         Node node = minMax.getSolution();
         System.out.println(node.getPositionAnswer()[0] + " : " + node.getPositionAnswer()[1]);
     }
+     */
 }

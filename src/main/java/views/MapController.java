@@ -1,36 +1,68 @@
 package views;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import model.Knight;
+import model.MinMax;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MapController implements Initializable {
     private final Integer[][] map = new Integer[8][8];
     private ArrayList<Tile> tiles;
-    private Image imgBlackChess = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/blackChess.png")));
 
     @FXML
     private Pane paneGame;
     @FXML
     private Button bTest;
-    private Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/blackChess.png")));
+    @FXML
+    private Button bStart;
+    @FXML
+    private Button bInstruction;
+    @FXML
+    private Button bClean;
+    @FXML
+    private Button bExit;
+    @FXML
+    private ComboBox<String> cbSelect;
     private int[] place = new int[2];
+    private Knight blackChess;
+    private int totalPoints = 39;
+    private int pointWhite = 0;
+    private int pointBlack = 0;
+    private boolean turnIA = true;
+    private boolean turnMe = false;
+    private Integer[] tempPlace = new Integer[2];
+    Stage stage;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadMap();
+        findPlace();
+        initCB();
+        blackChess = new Knight(place[0], place[1]);
     }
 
+
+    public void initCB() {
+        ObservableList<String> option =
+                FXCollections.observableArrayList("", "Principiante", "Amateur", "Experto");
+        cbSelect.setItems(option);
+        cbSelect.getSelectionModel().selectFirst();
+    }
 
     /**
      * Randomly generate a matriz of size 8x8
@@ -105,7 +137,7 @@ public class MapController implements Initializable {
                 place[0] = i;
                 place[1] = j;
                 Tile tile = new Tile(item, place);
-                setupTileEvent(tile);
+                //setupTileEvent(tile);
                 tiles.add(tile);
             }
         }
@@ -124,6 +156,7 @@ public class MapController implements Initializable {
             Tile tile = tiles.get(i);
             tile.setTranslateX(50 * (i % 8));
             tile.setTranslateY(50 * (i / 8));
+            setupTileEvent2(tile);
             paneGame.getChildren().add(tile);
         }
     }
@@ -152,33 +185,178 @@ public class MapController implements Initializable {
     public boolean possibleMovePlayer(Integer[] newPlace) {
         Integer x = (newPlace[0] > place[0]) ? newPlace[0] - place[0] : place[0] - newPlace[0];
         Integer y = (newPlace[1] > place[1]) ? newPlace[1] - place[1] : place[1] - newPlace[1];
-        if (((x == 1) && (y == 2)) || ((x == 2) && (y == 1))) {
+        if ((x == 1 && y == 2) || (x == 2 && y == 1) && (map[newPlace[0]][newPlace[1]] != 2)) {
             return true;
         }
         return false;
     }
 
-    @FXML
-    public void onClickUpdate(ActionEvent event) {
-        if (event.getSource() == bTest) {
-            loadMap();
+    public void movePlayer() {
+        if (possibleMovePlayer(tempPlace)) {
+            int point = map[tempPlace[0]][tempPlace[1]];
+            blackChess.sumPoints(point);
+            totalPoints -= points(point);
+            System.out.println(blackChess.getPoints());
+            //blackChess.updatePosition(tempPlace[0], tempPlace[1]);
+            map[tempPlace[0]][tempPlace[1]] = 1;
+            System.out.println("x: " + blackChess.getPlace()[0]);
+            System.out.println("y: " + blackChess.getPlace()[1]);
+            map[place[0]][place[1]] = 0;
+            newMap();
+            tempPlace = null;
         }
     }
 
-    private void setupTileEvent(Tile tile) {
+    public void moveIA() {
+        MinMax minMax = new MinMax(map, 6);
+        model.Node node;
+        Integer[] playWhite = new Integer[2];
+        node = minMax.getSolution();
+        playWhite = node.getPositionAnswer();
+        map[playWhite[0]][playWhite[1]] = 2;
+        map[place[0]][place[1]] = 0;
+    }
+
+    private void setupTileEvent() {
+        for (Tile tile : tiles) {
+            tile.setOnMouseClicked(mouseEvent -> {
+                Integer[] tilePLace = tile.getPlace();
+                tempPlace = tilePLace;
+            });
+        }
+    }
+
+    private void setupTileEvent2(Tile tile) {
         tile.setOnMouseClicked(mouseEvent -> {
-            Integer[] tempPLace = tile.getPlace();
-            if(possibleMovePlayer(tempPLace)) {
-                System.out.println("x: "  + tempPLace[0]);
-                System.out.println("y: " + tempPLace[1]);
-                map[tempPLace[0]][tempPLace[1]] = 1;
+            Integer[] tilePLace = tile.getPlace();
+            System.out.println(tilePLace[0]);
+            System.out.println(tilePLace[1]);
+            if (possibleMovePlayer(tilePLace)) {
+                int point = map[tilePLace[0]][tilePLace[1]];
+                blackChess.sumPoints(point);
+                totalPoints -= points(point);
+                System.out.println("Puntos blackChess: " + blackChess.getPoints());
+                map[tilePLace[0]][tilePLace[1]] = 1;
+                System.out.println("x: " + blackChess.getPlace()[0]);
+                System.out.println("y: " + blackChess.getPlace()[1]);
                 map[place[0]][place[1]] = 0;
-                newMap();
+
+                synchronized (this) {
+                    try {
+                        newMap();
+                        this.wait(500);
+                        playIA();
+                    } catch (InterruptedException e) {
+                        System.out.println(e);
+                    }
+                }
             }
         });
+
+    }
+
+    public void playIA() {
+        model.Node node;
+        Integer[] playWhite = new Integer[2];
+        MinMax minMax = new MinMax(map, 2);
+        node = minMax.getSolution();
+        playWhite = node.getPositionAnswer();
+        totalPoints -= points(map[playWhite[0]][playWhite[1]]);
+        pointWhite += points(map[playWhite[0]][playWhite[1]]);
+        map[playWhite[0]][playWhite[1]] = 2;
+        Integer[] place2 = node.getKnights()[0].getPlace();
+        map[place2[0]][place2[1]] = 0;
+        newMap();
     }
 
     public Integer[][] getMap() {
         return map;
+    }
+
+    public void game() {
+        totalPoints = 39;
+        playIA();
+    }
+
+    public int points(int type) {
+        int pst = 0;
+        switch (type) {
+            case 3 -> {
+                pst = 5;
+            }
+            case 4 -> {
+                pst = 1;
+            }
+            case 5 -> {
+                pst = 3;
+            }
+        }
+        return pst;
+    }
+
+    // Eventos
+
+    public void instructionEvent() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initStyle(StageStyle.UTILITY);
+        alert.setTitle("Instrucciones");
+        alert.setHeaderText(null);
+        alert.setContentText("Hungry Horses" + "\n" +
+                "Se tendran 3 niveles de juego(Principiante, Amateur, Experto)." + "\n" +
+                "Dentro del tablero habran diferentes tipos de casillas:" + "\n" +
+                "\t14 casillas con césped" + "\n" +
+                "\t5 casillas con flores" + "\n" +
+                "\t2 casillas con manzanas" + "\n" +
+                "Las cuales tendran diferente puntuacion al ser comidas por un caballo:" + "\n" +
+                "\t1 punto si es un césped" + "\n" +
+                "\t3 puntos si es una flor" + "\n" +
+                "\t5 puntos si es una manzana." + "\n" +
+                "¡El ganador sera quien obtenga el mayor numero de puntos posibles!");
+        alert.showAndWait();
+    }
+
+    public void exitEvent() {
+        Alert exitAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        exitAlert.setTitle("Salir");
+        exitAlert.setHeaderText("Vas a salir");
+        exitAlert.setContentText("¿Realmente quieres salir?");
+        if (exitAlert.showAndWait().get() == ButtonType.OK) {
+            stage.close();
+        }
+    }
+
+    private void changeColorUpdateButton() {
+        bStart.setDisable(false);
+        if (checkCombo()) {
+            bStart.setStyle("-fx-background-color: lightgreen; ");
+        } else {
+            bStart.setStyle("-fx-background-color: silver; ");
+        }
+    }
+
+    private boolean checkCombo() {
+        return !cbSelect.getSelectionModel().getSelectedItem().isEmpty();
+    }
+
+    @FXML
+    public void onClick(ActionEvent event) throws InterruptedException {
+        if (event.getSource() == bStart) {
+            game();
+        }
+        if (event.getSource() == bTest) {
+            //loadMap();
+            //setupTileEvent();
+            //movePlayer();
+            //game();
+        }
+        if (event.getSource() == cbSelect) {
+            changeColorUpdateButton();
+        }
+        if (event.getSource() == bInstruction) {
+            instructionEvent();
+        }
+        if (event.getSource() == bExit) {
+            exitEvent();
+        }
     }
 }
