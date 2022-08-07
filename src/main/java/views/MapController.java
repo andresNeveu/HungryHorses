@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import model.Knight;
 import model.MinMax;
 
 import java.net.URL;
@@ -27,8 +26,6 @@ public class MapController implements Initializable {
     @FXML
     private Pane paneGame;
     @FXML
-    private Button bTest;
-    @FXML
     private Button bStart;
     @FXML
     private Button bInstruction;
@@ -38,13 +35,11 @@ public class MapController implements Initializable {
     private Button bExit;
     @FXML
     private ComboBox<String> cbSelect;
-    private int[] place = new int[2];
-    private Knight blackChess;
+    private final int[] place = new int[2];
     private int totalPoints = 39;
     private int pointsIA = 0;
     private int pointMe = 0;
     private int level;
-    private Integer[] tempPlace = new Integer[2];
     Stage stage;
 
     @Override
@@ -52,10 +47,11 @@ public class MapController implements Initializable {
         loadMap();
         findPlace();
         initCB();
-        blackChess = new Knight(place[0], place[1]);
     }
 
-
+    /**
+     * Init combobox options
+     */
     public void initCB() {
         ObservableList<String> option =
                 FXCollections.observableArrayList("", "Principiante", "Amateur", "Experto");
@@ -142,6 +138,9 @@ public class MapController implements Initializable {
         }
     }
 
+    /**
+     * Clean current map a paint a new map
+     */
     public void newMap() {
         findPlace();
         ObservableList<Node> tilesMap = paneGame.getChildren();
@@ -149,13 +148,16 @@ public class MapController implements Initializable {
         paintMap();
     }
 
+    /**
+     * Paint a new map
+     */
     public void paintMap() {
         loadTile();
         for (int i = 0; i < tiles.size(); i++) {
             Tile tile = tiles.get(i);
-            tile.setTranslateX(50 * (i % 8));
-            tile.setTranslateY(50 * (i / 8));
-            setupTileEvent2(tile);
+            tile.setTranslateX(50 * (i % 8.0));
+            tile.setTranslateY(50 * (i / 8.0));
+            playPlayer(tile);
             paneGame.getChildren().add(tile);
         }
     }
@@ -170,6 +172,9 @@ public class MapController implements Initializable {
         paintMap();
     }
 
+    /**
+     * Find place of player piece
+     */
     public void findPlace() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -181,51 +186,22 @@ public class MapController implements Initializable {
         }
     }
 
+    /**
+     * Determines if the player's piece can be moved onto a tile.
+     * @param newPlace Integer[] target position.
+     * @return boolean true if it can be moved, false otherwise.
+     */
     public boolean possibleMovePlayer(Integer[] newPlace) {
-        Integer x = (newPlace[0] > place[0]) ? newPlace[0] - place[0] : place[0] - newPlace[0];
-        Integer y = (newPlace[1] > place[1]) ? newPlace[1] - place[1] : place[1] - newPlace[1];
-        if ((x == 1 && y == 2) || (x == 2 && y == 1) && (map[newPlace[0]][newPlace[1]] != 2)) {
-            return true;
-        }
-        return false;
+        int x = (newPlace[0] > place[0]) ? newPlace[0] - place[0] : place[0] - newPlace[0];
+        int y = (newPlace[1] > place[1]) ? newPlace[1] - place[1] : place[1] - newPlace[1];
+        return ((x == 1 && y == 2) || (x == 2 && y == 1)) && (map[newPlace[0]][newPlace[1]] != 2);
     }
 
-    public void movePlayer() {
-        if (possibleMovePlayer(tempPlace)) {
-            int point = map[tempPlace[0]][tempPlace[1]];
-            blackChess.sumPoints(point);
-            totalPoints -= points(point);
-            System.out.println(blackChess.getPoints());
-            //blackChess.updatePosition(tempPlace[0], tempPlace[1]);
-            map[tempPlace[0]][tempPlace[1]] = 1;
-            System.out.println("x: " + blackChess.getPlace()[0]);
-            System.out.println("y: " + blackChess.getPlace()[1]);
-            map[place[0]][place[1]] = 0;
-            newMap();
-            tempPlace = null;
-        }
-    }
-
-    public void moveIA() {
-        MinMax minMax = new MinMax(map, 6);
-        model.Node node;
-        Integer[] playWhite = new Integer[2];
-        node = minMax.getSolution();
-        playWhite = node.getPositionAnswer();
-        map[playWhite[0]][playWhite[1]] = 2;
-        map[place[0]][place[1]] = 0;
-    }
-
-    private void setupTileEvent() {
-        for (Tile tile : tiles) {
-            tile.setOnMouseClicked(mouseEvent -> {
-                Integer[] tilePLace = tile.getPlace();
-                tempPlace = tilePLace;
-            });
-        }
-    }
-
-    private void setupTileEvent2(Tile tile) {
+    /**
+     * Configure mouse event on tiles that allows player movement.
+     * @param tile Tile
+     */
+    private void playPlayer(Tile tile) {
         tile.setOnMouseClicked(mouseEvent -> {
             Integer[] tilePLace = tile.getPlace();
             if (possibleMovePlayer(tilePLace)) {
@@ -237,22 +213,18 @@ public class MapController implements Initializable {
                 map[tilePLace[0]][tilePLace[1]] = 1;
                 map[place[0]][place[1]] = 0;
                 newMap();
-                synchronized (this) {
-                    try {
-                        this.wait(500);
-                        playIA();
-                    } catch (InterruptedException e) {
-                        System.out.println(e);
-                    }
-                }
+                playIA();
             }
         });
 
     }
 
+    /**
+     * Play IA using minimax algorithm.
+     */
     public void playIA() {
         model.Node node;
-        Integer[] playWhite = new Integer[2];
+        Integer[] playWhite;
         MinMax minMax = new MinMax(map, level);
         node = minMax.getSolution();
         playWhite = node.getPositionAnswer();
@@ -263,11 +235,12 @@ public class MapController implements Initializable {
         Integer[] place2 = node.getKnights()[0].getPlace();
         map[place2[0]][place2[1]] = 0;
         newMap();
-        if (totalPoints == 0) {
-            System.out.println("Ganador");
-        }
     }
 
+    /**
+     * Determine the level of difficulty.
+     * @param lvl String
+     */
     public void setLevel(String lvl) {
         if (lvl.equalsIgnoreCase("Principiante")) {
             level = 2;
@@ -280,50 +253,48 @@ public class MapController implements Initializable {
         }
     }
 
-    public Integer[][] getMap() {
-        return map;
-    }
-
+    /**
+     * Start game
+     */
     public void game() {
         totalPoints = 39;
         setLevel(cbSelect.getSelectionModel().getSelectedItem());
         playIA();
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     */
     public int points(int type) {
         int pst = 0;
         switch (type) {
-            case 3 -> {
-                pst = 5;
-            }
-            case 4 -> {
-                pst = 1;
-            }
-            case 5 -> {
-                pst = 3;
-            }
+            case 3 -> pst = 5;
+            case 4 -> pst = 1;
+            case 5 -> pst = 3;
         }
         return pst;
     }
 
-    // Eventos
 
     public void instructionEvent() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initStyle(StageStyle.UTILITY);
         alert.setTitle("Instrucciones");
         alert.setHeaderText(null);
-        alert.setContentText("Hungry Horses" + "\n" +
-                "Se tendran 3 niveles de juego(Principiante, Amateur, Experto)." + "\n" +
-                "Dentro del tablero habran diferentes tipos de casillas:" + "\n" +
-                "\t14 casillas con césped" + "\n" +
-                "\t5 casillas con flores" + "\n" +
-                "\t2 casillas con manzanas" + "\n" +
-                "Las cuales tendran diferente puntuacion al ser comidas por un caballo:" + "\n" +
-                "\t1 punto si es un césped" + "\n" +
-                "\t3 puntos si es una flor" + "\n" +
-                "\t5 puntos si es una manzana." + "\n" +
-                "¡El ganador sera quien obtenga el mayor numero de puntos posibles!");
+        alert.setContentText("""
+                Hungry Horses
+                Se tendran 3 niveles de juego(Principiante, Amateur, Experto).
+                Dentro del tablero habran diferentes tipos de casillas:
+                \t14 casillas con césped
+                \t5 casillas con flores
+                \t2 casillas con manzanas
+                Las cuales tendran diferente puntuacion al ser comidas por un caballo:
+                \t1 punto si es un césped
+                \t3 puntos si es una flor
+                \t5 puntos si es una manzana.
+                ¡El ganador sera quien obtenga el mayor numero de puntos posibles!""");
         alert.showAndWait();
     }
 
@@ -362,17 +333,22 @@ public class MapController implements Initializable {
         totalPoints = 39;
         loadMap();
     }
-    public void updatePoints(){
+
+    public void updatePoints() {
         labelIA.setText(" " + pointsIA);
         labelMyPoints.setText(" " + pointMe);
     }
-    public void winner(){
+
+    /**
+     * Determine the winner
+     */
+    public void winner() {
         boolean total = totalPoints == 0;
         boolean IA = pointsIA > pointMe + totalPoints;
         boolean Me = pointMe > pointsIA + totalPoints;
-        String winner = "";
-        winner = pointsIA > pointMe? "IA": "ME";
-        if(total || IA || Me){
+        String winner;
+        winner = pointsIA > pointMe ? "IA" : "ME";
+        if (total || IA || Me) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.initStyle(StageStyle.UTILITY);
             alert.setTitle("Ganador");
@@ -382,21 +358,18 @@ public class MapController implements Initializable {
             paneGame.setDisable(true);
         }
     }
+
     @FXML
-    public void onClick(ActionEvent event) throws InterruptedException {
+    public void onClick(ActionEvent event) {
         if (event.getSource() == bStart) {
+            bStart.setDisable(true);
+            cbSelect.setDisable(true);
             game();
-        }
-        if (event.getSource() == bTest) {
-            //loadMap();
-            //setupTileEvent();
-            //movePlayer();
-            //game();
         }
         if (event.getSource() == cbSelect) {
             changeColorUpdateButton();
         }
-        if(event.getSource() == bClean) {
+        if (event.getSource() == bClean) {
             resetGUI();
         }
         if (event.getSource() == bInstruction) {
