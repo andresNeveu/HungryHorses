@@ -226,7 +226,7 @@ public class MapController implements Initializable {
         model.Node node;
         Integer[] playWhite;
         MinMax minMax = new MinMax(map, level);
-        node = minMax.getSolution();
+        node = minMax.getSolution(pointsIA, pointMe);
         playWhite = node.getPositionAnswer();
         totalPoints -= points(map[playWhite[0]][playWhite[1]]);
         pointsIA += points(map[playWhite[0]][playWhite[1]]);

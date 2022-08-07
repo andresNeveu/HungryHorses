@@ -15,13 +15,14 @@ public class MinMax {
         this.objective = objective;
     }
 
-    public Node getSolution() {
+    public Node getSolution( Integer pointIA, Integer pointMe) {
         Stack<Node> stack = new Stack<>();
         Integer[][] places = Node.initialPlace(map);
-        Node source = new Node(map, places);
+        Node source = new Node(map, places, pointIA, pointMe);
         stack.push(source);
         while (true) {
             if (stack.isEmpty()) {
+                System.out.println(source.getUtility() + " " + source.getPositionAnswer()[0] + " : " + source.getPositionAnswer()[1]);
                 return source;
             }
             Node node = stack.pop();

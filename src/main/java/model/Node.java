@@ -21,12 +21,12 @@ public class Node {
      *
      * @param map environment
      */
-    public Node(Integer[][] map, Integer[][] positions) {
+    public Node(Integer[][] map, Integer[][] positions, Integer pointIA, Integer pointMe) {
         this.map = map;
         this.parent = null;
         this.deep = 0;
-        this.points[0] = 0;
-        this.points[1] = 0;
+        this.points[0] = pointIA;
+        this.points[1] = pointMe;
         this.knights[0] = new Knight(positions[0][0], positions[0][1]);
         this.knights[1] = new Knight(positions[1][0], positions[1][1]);
         this.kind = 0;
@@ -184,23 +184,31 @@ public class Node {
             } else {
                 utility = Integer.MIN_VALUE;
             }
-        } else if (points[0] != 0) {
+        } else {
             Node node = getParent();
             int deepAux = getDeep();
+            int deepAux2 = getDeep();
             while(node != null){
                 if(node.getPoints()[0] < points[0]){
-                    if(node.getPoints()[0] != 0){
-                        deepAux = node.getDeep();
+                    if(node.getDeep() != 0){
+                        deepAux = node.getDeep() + 1;
                     }
                     break;
                 }
                 node= node.getParent();
             }
-            utility = points[0] / deepAux;
-        } else {
-            utility = Integer.MIN_VALUE;
+            node = getParent();
+            while(node != null){
+                if(node.getPoints()[1] < points[1]){
+                    if(node.getDeep() != 0){
+                        deepAux = node.getDeep() + 1;
+                    }
+                    break;
+                }
+                node= node.getParent();
+            }
+            utility = points[0] / deepAux - points[1] / deepAux2;
         }
-
         setSolution(knights[0].getPlace()[0], knights[0].getPlace()[1]);
         resolveUtility();
     }
