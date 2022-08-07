@@ -160,12 +160,12 @@ public class Node {
 
     public void useUtility(Integer value, Integer x, Integer y) {
         if (kind == 0) {
-            if (value > utility) {
+            if (value >= utility) {
                 utility = value;
                 setSolution(x, y);
             }
         } else {
-            if (value < utility) {
+            if (value <= utility) {
                 utility = value;
                 setSolution(x, y);
             }
@@ -173,7 +173,34 @@ public class Node {
     }
 
     public void calcUtility() {
-        utility = points[0] - points[1];
+        int totalPoints = lessPoints();
+        boolean total = totalPoints == 0;
+        boolean IA = points[0] > points[1] + totalPoints;
+        boolean Me = points[1] > points[0] + totalPoints;
+        boolean winner = points[0] > points[1];
+        if(total || IA || Me) {
+            if(winner) {
+                utility = Integer.MAX_VALUE;
+            } else {
+                utility = Integer.MIN_VALUE;
+            }
+        } else if (points[0] != 0) {
+            Node node = getParent();
+            int deepAux = getDeep();
+            while(node != null){
+                if(node.getPoints()[0] < points[0]){
+                    if(node.getPoints()[0] != 0){
+                        deepAux = node.getDeep();
+                    }
+                    break;
+                }
+                node= node.getParent();
+            }
+            utility = points[0] / deepAux;
+        } else {
+            utility = Integer.MIN_VALUE;
+        }
+
         setSolution(knights[0].getPlace()[0], knights[0].getPlace()[1]);
         resolveUtility();
     }
@@ -192,11 +219,34 @@ public class Node {
     }
 
     public ArrayList<Node> expandNode() {
-        ArrayList<Integer[]> list = (ArrayList<Integer[]>) knights[kind].moveList(map).clone();
+        ArrayList<Integer[]> list = knights[kind].moveList(map);
         ArrayList<Node> nodes = new ArrayList<>();
         for (Integer[] place : list) {
             nodes.add(new Node(this, place));
         }
         return nodes;
+    }
+
+    public int lessPoints() {
+        int total = 0;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (map[i][j] > 2) {
+                    switch (map[i][j]) {
+                        case 3 -> {
+                            total += 5;
+                        }
+                        case 4 -> {
+                            total += 1;
+                        }
+                        case 5 -> {
+                            total += 3;
+                        }
+                    }
+                }
+
+            }
+        }
+        return total;
     }
 }
