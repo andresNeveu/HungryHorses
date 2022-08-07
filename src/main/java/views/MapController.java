@@ -155,8 +155,8 @@ public class MapController implements Initializable {
         loadTile();
         for (int i = 0; i < tiles.size(); i++) {
             Tile tile = tiles.get(i);
-            tile.setTranslateX(50 * (i % 8.0));
-            tile.setTranslateY(50 * (i / 8.0));
+            tile.setTranslateX(50 * (i % 8));
+            tile.setTranslateY(50 * (i / 8));
             playPlayer(tile);
             paneGame.getChildren().add(tile);
         }
@@ -323,6 +323,7 @@ public class MapController implements Initializable {
 
     public void resetGUI() {
         cbSelect.getSelectionModel().selectFirst();
+        cbSelect.setDisable(false);
         paneGame.setDisable(true);
         bStart.setDisable(true);
         bStart.setStyle("-fx-background-color: silver;");

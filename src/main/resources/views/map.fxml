@@ -15,7 +15,7 @@
       <Pane fx:id="paneGame" disable="true" layoutX="20.0" layoutY="14.0" prefHeight="400.0" prefWidth="400.0" />
       <AnchorPane layoutX="429.0" layoutY="14.0" prefHeight="400.0" prefWidth="222.0">
          <children>
-            <VBox alignment="TOP_CENTER" depthTest="DISABLE" layoutX="8.0" layoutY="95.0" prefHeight="230.0" prefWidth="206.0" spacing="15.0">
+            <VBox alignment="TOP_CENTER" depthTest="DISABLE" layoutX="9.0" layoutY="113.0" prefHeight="230.0" prefWidth="206.0" spacing="15.0">
                <children>
                   <ComboBox fx:id="cbSelect" onAction="#onClick" prefHeight="24.0" prefWidth="171.0" style="-fx-background-color: grey;" />
                   <Button fx:id="bStart" disable="true" mnemonicParsing="false" onAction="#onClick" prefHeight="24.0" prefWidth="175.0" style="-fx-background-color: silver;" text="Iniciar" />
@@ -34,23 +34,35 @@
             </Label>
          </children>
       </AnchorPane>
-      <HBox layoutX="29.0" layoutY="415.0" prefHeight="26.0" prefWidth="382.0">
+      <HBox layoutX="20.0" layoutY="420.0" prefHeight="18.0" prefWidth="382.0">
          <children>
-            <Label text="Puntos IA" />
+            <Label text="Puntos IA:">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font></Label>
             <Label fx:id="labelIA" text="0">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
             </Label>
-            <Label text="Mis puntos">
+            <Label text="Mis puntos:">
                <HBox.margin>
                   <Insets left="50.0" />
                </HBox.margin>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
             </Label>
             <Label fx:id="labelMyPoints" layoutX="171.0" layoutY="10.0" text="0">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
             </Label>
          </children>
       </HBox>
