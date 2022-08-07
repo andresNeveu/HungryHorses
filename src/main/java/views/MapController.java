@@ -312,7 +312,6 @@ public class MapController implements Initializable {
     private void changeColorUpdateButton() {
         if (checkCombo()) {
             bStart.setDisable(false);
-            paneGame.setDisable(false);
             bStart.setStyle("-fx-background-color: lightgreen; ");
         }
     }
@@ -365,6 +364,7 @@ public class MapController implements Initializable {
         if (event.getSource() == bStart) {
             bStart.setDisable(true);
             cbSelect.setDisable(true);
+            paneGame.setDisable(false);
             game();
         }
         if (event.getSource() == cbSelect) {
