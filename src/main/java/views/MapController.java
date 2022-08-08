@@ -238,7 +238,6 @@ public class MapController implements Initializable {
      */
     public void playIA() {
         if (checkWinner()) {
-            System.out.println("********************");
             messageWinner();
         } else {
             model.Node node;

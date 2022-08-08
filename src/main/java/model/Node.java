@@ -8,7 +8,7 @@ public class Node {
     private final Integer deep;
     private final Integer[] positionAnswer = new Integer[2];
     private final Integer[] points = new Integer[2]; //[0] para maquina,[1] para jugador
-    private Double utility;
+    private Integer utility;
     private final Integer kind; //0 max, 1 min
     private Integer[][] lastPlace = new Integer[2][2];
 
@@ -30,7 +30,7 @@ public class Node {
         this.knights[0] = new Knight(positions[0][0], positions[0][1]);
         this.knights[1] = new Knight(positions[1][0], positions[1][1]);
         this.kind = 0;
-        this.utility = Double.MIN_VALUE;
+        this.utility = Integer.MIN_VALUE;
     }
 
 
@@ -42,7 +42,7 @@ public class Node {
     public Node(Node parent, Integer[] position) {
         this.parent = parent;
         this.kind = parent.getKind() == 0 ? 1 : 0;
-        this.utility = kind == 0 ? Double.MIN_VALUE : Double.MAX_VALUE;
+        this.utility = kind == 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         this.deep = parent.getDeep() + 1;
         this.knights[0] = kind == 0 ? new Knight(parent.getKnights()[0].getPlace()[0], parent.getKnights()[0].getPlace()[1])
                 : new Knight(position[0], position[1]);
@@ -77,7 +77,7 @@ public class Node {
         return kind;
     }
 
-    public Double getUtility() {
+    public Integer getUtility() {
         return utility;
     }
 
@@ -139,7 +139,7 @@ public class Node {
         return nextMap;
     }
 
-    public void useUtility(Double value, Integer x, Integer y) {
+    public void useUtility(Integer value, Integer x, Integer y) {
         if (kind == 0) {
             if (value >= utility) {
                 utility = value;
@@ -161,14 +161,14 @@ public class Node {
         boolean winner = points[0] > points[1];
         if (total || IA || Me) {
             if (winner) {
-                utility = Double.MAX_VALUE;
+                utility = Integer.MAX_VALUE;
             } else {
-                utility = Double.MIN_VALUE;
+                utility = Integer.MIN_VALUE;
             }
         } else {
             Node node = getParent();
-            double deepAux = getDeep();
-            double deepAux2 = getDeep();
+            Integer deepAux = getDeep();
+            Integer deepAux2 = getDeep();
             while (node != null) {
                 if (node.getPoints()[0] < points[0]) {
                     if (node.getDeep() != 0) {
