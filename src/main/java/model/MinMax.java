@@ -1,7 +1,5 @@
 package model;
 
-import views.MapController;
-
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -15,14 +13,14 @@ public class MinMax {
         this.objective = objective;
     }
 
-    public Node getSolution( Integer pointIA, Integer pointMe) {
+    public Node getSolution(Integer pointIA, Integer pointMe, Integer[][] lastPlace) {
         Stack<Node> stack = new Stack<>();
         Integer[][] places = Node.initialPlace(map);
-        Node source = new Node(map, places, pointIA, pointMe);
+        Node source = new Node(map, places, pointIA, pointMe, lastPlace);
         stack.push(source);
         while (true) {
             if (stack.isEmpty()) {
-                System.out.println(source.getUtility() + " " + source.getPositionAnswer()[0] + " : " + source.getPositionAnswer()[1]);
+                System.out.println(source.getUtility() + " = " + source.getPositionAnswer()[0] + " : " + source.getPositionAnswer()[1]);
                 return source;
             }
             Node node = stack.pop();
@@ -36,15 +34,4 @@ public class MinMax {
             }
         }
     }
-    /*
-    public static void main(String[] args) {
-        MapController mapController = new MapController();
-        mapController.generateInitMap();
-        MinMax minMax = new MinMax(mapController.getMap(), 4);
-        Node otherNode = new Node(mapController.getMap(), Node.initialPlace(mapController.getMap()));
-        otherNode.viewMap();
-        Node node = minMax.getSolution();
-        System.out.println(node.getPositionAnswer()[0] + " : " + node.getPositionAnswer()[1]);
-    }
-     */
 }

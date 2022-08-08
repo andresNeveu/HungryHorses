@@ -35,7 +35,8 @@ public class MapController implements Initializable {
     private Button bExit;
     @FXML
     private ComboBox<String> cbSelect;
-    private final int[] place = new int[2];
+    private final Integer[] place = new Integer[2];
+    private final Integer[][] lastPlace = new Integer[2][2];
     private int totalPoints = 39;
     private int pointsIA = 0;
     private int pointMe = 0;
@@ -132,7 +133,6 @@ public class MapController implements Initializable {
                 place[0] = i;
                 place[1] = j;
                 Tile tile = new Tile(item, place);
-                //setupTileEvent(tile);
                 tiles.add(tile);
             }
         }
@@ -186,8 +186,21 @@ public class MapController implements Initializable {
         }
     }
 
+
+    public void findPlac2() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (map[i][j] == 2) {
+                    lastPlace[0][0] = i;
+                    lastPlace[0][1] = j;
+                }
+            }
+        }
+    }
+
     /**
      * Determines if the player's piece can be moved onto a tile.
+     *
      * @param newPlace Integer[] target position.
      * @return boolean true if it can be moved, false otherwise.
      */
@@ -199,17 +212,18 @@ public class MapController implements Initializable {
 
     /**
      * Configure mouse event on tiles that allows player movement.
+     *
      * @param tile Tile
      */
     private void playPlayer(Tile tile) {
         tile.setOnMouseClicked(mouseEvent -> {
             Integer[] tilePLace = tile.getPlace();
             if (possibleMovePlayer(tilePLace)) {
-                winner();
                 int point = map[tilePLace[0]][tilePLace[1]];
                 pointMe += points(point);
                 totalPoints -= points(point);
                 updatePoints();
+                lastPlace[1] = place;
                 map[tilePLace[0]][tilePLace[1]] = 1;
                 map[place[0]][place[1]] = 0;
                 newMap();
@@ -223,22 +237,29 @@ public class MapController implements Initializable {
      * Play IA using minimax algorithm.
      */
     public void playIA() {
-        model.Node node;
-        Integer[] playWhite;
-        MinMax minMax = new MinMax(map, level);
-        node = minMax.getSolution(pointsIA, pointMe);
-        playWhite = node.getPositionAnswer();
-        totalPoints -= points(map[playWhite[0]][playWhite[1]]);
-        pointsIA += points(map[playWhite[0]][playWhite[1]]);
-        updatePoints();
-        map[playWhite[0]][playWhite[1]] = 2;
-        Integer[] place2 = node.getKnights()[0].getPlace();
-        map[place2[0]][place2[1]] = 0;
-        newMap();
+        if (checkWinner()) {
+            System.out.println("********************");
+            messageWinner();
+        } else {
+            model.Node node;
+            Integer[] playWhite;
+            MinMax minMax = new MinMax(map, level);
+            node = minMax.getSolution(pointsIA, pointMe, lastPlace);
+            findPlac2();
+            playWhite = node.getPositionAnswer();
+            totalPoints -= points(map[playWhite[0]][playWhite[1]]);
+            pointsIA += points(map[playWhite[0]][playWhite[1]]);
+            updatePoints();
+            map[playWhite[0]][playWhite[1]] = 2;
+            Integer[] place2 = node.getKnights()[0].getPlace();
+            map[place2[0]][place2[1]] = 0;
+            newMap();
+        }
     }
 
     /**
      * Determine the level of difficulty.
+     *
      * @param lvl String
      */
     public void setLevel(String lvl) {
@@ -263,9 +284,8 @@ public class MapController implements Initializable {
     }
 
     /**
-     *
      * @param type
-     * @return
+     * @return int
      */
     public int points(int type) {
         int pst = 0;
@@ -339,24 +359,25 @@ public class MapController implements Initializable {
         labelMyPoints.setText(" " + pointMe);
     }
 
+    public void messageWinner() {
+        String winner = pointsIA > pointMe ? "El ganador es la IA" : "El ganador es el jugador";
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initStyle(StageStyle.UTILITY);
+        alert.setTitle("Ganador");
+        alert.setHeaderText(null);
+        alert.setContentText(winner);
+        alert.showAndWait();
+        paneGame.setDisable(true);
+    }
+
     /**
      * Determine the winner
      */
-    public void winner() {
+    public boolean checkWinner() {
         boolean total = totalPoints == 0;
         boolean IA = pointsIA > pointMe + totalPoints;
         boolean Me = pointMe > pointsIA + totalPoints;
-        String winner;
-        winner = pointsIA > pointMe ? "IA" : "ME";
-        if (total || IA || Me) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.initStyle(StageStyle.UTILITY);
-            alert.setTitle("Ganador");
-            alert.setHeaderText(null);
-            alert.setContentText(winner);
-            alert.showAndWait();
-            paneGame.setDisable(true);
-        }
+        return total || IA || Me;
     }
 
     @FXML

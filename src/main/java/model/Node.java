@@ -1,8 +1,6 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Stack;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class Node {
     private final Integer[][] map;
@@ -10,8 +8,9 @@ public class Node {
     private final Integer deep;
     private final Integer[] positionAnswer = new Integer[2];
     private final Integer[] points = new Integer[2]; //[0] para maquina,[1] para jugador
-    private Integer utility;
+    private Double utility;
     private final Integer kind; //0 max, 1 min
+    private Integer[][] lastPlace = new Integer[2][2];
 
     private final Knight[] knights = new Knight[2]; //[0] para maquina,[1] para jugador
 
@@ -21,16 +20,17 @@ public class Node {
      *
      * @param map environment
      */
-    public Node(Integer[][] map, Integer[][] positions, Integer pointIA, Integer pointMe) {
+    public Node(Integer[][] map, Integer[][] positions, Integer pointIA, Integer pointMe, Integer[][] lastPlace) {
         this.map = map;
         this.parent = null;
         this.deep = 0;
         this.points[0] = pointIA;
         this.points[1] = pointMe;
+        this.lastPlace = lastPlace;
         this.knights[0] = new Knight(positions[0][0], positions[0][1]);
         this.knights[1] = new Knight(positions[1][0], positions[1][1]);
         this.kind = 0;
-        this.utility = Integer.MIN_VALUE;
+        this.utility = Double.MIN_VALUE;
     }
 
 
@@ -42,7 +42,7 @@ public class Node {
     public Node(Node parent, Integer[] position) {
         this.parent = parent;
         this.kind = parent.getKind() == 0 ? 1 : 0;
-        this.utility = kind == 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        this.utility = kind == 0 ? Double.MIN_VALUE : Double.MAX_VALUE;
         this.deep = parent.getDeep() + 1;
         this.knights[0] = kind == 0 ? new Knight(parent.getKnights()[0].getPlace()[0], parent.getKnights()[0].getPlace()[1])
                 : new Knight(position[0], position[1]);
@@ -77,11 +77,7 @@ public class Node {
         return kind;
     }
 
-    public Integer[][] getMap() {
-        return map;
-    }
-
-    public Integer getUtility() {
+    public Double getUtility() {
         return utility;
     }
 
@@ -115,15 +111,9 @@ public class Node {
         if (map[position[0]][position[1]] > 2) {
             int points = 0;
             switch (map[position[0]][position[1]]) {
-                case 3 -> {
-                    points = 5;
-                }
-                case 4 -> {
-                    points = 1;
-                }
-                case 5 -> {
-                    points = 3;
-                }
+                case 3 -> points = 5;
+                case 4 -> points = 1;
+                case 5 -> points = 3;
             }
             return points;
         }
@@ -149,16 +139,7 @@ public class Node {
         return nextMap;
     }
 
-    public void viewMap() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.print(map[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    public void useUtility(Integer value, Integer x, Integer y) {
+    public void useUtility(Double value, Integer x, Integer y) {
         if (kind == 0) {
             if (value >= utility) {
                 utility = value;
@@ -178,35 +159,36 @@ public class Node {
         boolean IA = points[0] > points[1] + totalPoints;
         boolean Me = points[1] > points[0] + totalPoints;
         boolean winner = points[0] > points[1];
-        if(total || IA || Me) {
-            if(winner) {
-                utility = Integer.MAX_VALUE;
+        if (total || IA || Me) {
+            if (winner) {
+                utility = Double.MAX_VALUE;
             } else {
-                utility = Integer.MIN_VALUE;
+                utility = Double.MIN_VALUE;
             }
         } else {
             Node node = getParent();
-            int deepAux = getDeep();
-            int deepAux2 = getDeep();
-            while(node != null){
-                if(node.getPoints()[0] < points[0]){
-                    if(node.getDeep() != 0){
+            double deepAux = getDeep();
+            double deepAux2 = getDeep();
+            while (node != null) {
+                if (node.getPoints()[0] < points[0]) {
+                    if (node.getDeep() != 0) {
                         deepAux = node.getDeep() + 1;
                     }
                     break;
                 }
-                node= node.getParent();
+                node = node.getParent();
             }
             node = getParent();
-            while(node != null){
-                if(node.getPoints()[1] < points[1]){
-                    if(node.getDeep() != 0){
+            while (node != null) {
+                if (node.getPoints()[1] < points[1]) {
+                    if (node.getDeep() != 0) {
                         deepAux = node.getDeep() + 1;
                     }
                     break;
                 }
-                node= node.getParent();
+                node = node.getParent();
             }
+            //utility = points[0] - points[1];
             utility = points[0] / deepAux - points[1] / deepAux2;
         }
         setSolution(knights[0].getPlace()[0], knights[0].getPlace()[1]);
@@ -228,6 +210,10 @@ public class Node {
 
     public ArrayList<Node> expandNode() {
         ArrayList<Integer[]> list = knights[kind].moveList(map);
+
+        if (getDeep() == 0) {
+            list.removeIf(i -> i[0] == lastPlace[0][0] && i[1] == lastPlace[0][1]);
+        }
         ArrayList<Node> nodes = new ArrayList<>();
         for (Integer[] place : list) {
             nodes.add(new Node(this, place));
@@ -241,15 +227,9 @@ public class Node {
             for (int j = 0; j < 8; j++) {
                 if (map[i][j] > 2) {
                     switch (map[i][j]) {
-                        case 3 -> {
-                            total += 5;
-                        }
-                        case 4 -> {
-                            total += 1;
-                        }
-                        case 5 -> {
-                            total += 3;
-                        }
+                        case 3 -> total += 5;
+                        case 4 -> total += 1;
+                        case 5 -> total += 3;
                     }
                 }
 
